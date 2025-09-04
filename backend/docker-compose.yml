@@ -1,0 +1,26 @@
+services:
+  api:
+    build: .
+    container_name: server
+    environment:
+      DATABASE_URL: postgresql+psycopg2://root:password@postgres:5432/ai_assistant
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ai_assistant
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
