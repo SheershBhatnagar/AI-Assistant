@@ -1,0 +1,38 @@
+.gradle/
+.kotlin/
+build/
+
+# Android Specific (Jetpack Compose)
+*.apk
+*.ap_
+*.aab
+*.dex
+captures/
+**/google-services.json
+**/secrets.properties
+local.properties
+.externalNativeBuild/
+.cxx/
+**/generated/
+proguard-rules.pro
+
+# Ktor & Backend Specific
+**/log/
+**/logs/
+application.conf
+application.yaml
+**/resources/secret.conf
+**/.env
+
+# IDE Settings (IntelliJ IDEA & Android Studio)
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# OS & System Files
+Thumbs.db
+.DS_Store
+*.swp
+*.swo

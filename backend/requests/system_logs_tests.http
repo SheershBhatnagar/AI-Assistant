@@ -1,0 +1,14 @@
+### 1. Create a System Log
+POST http://localhost:8080/api/v1/logs
+Content-Type: application/json
+
+{
+  "userId": "9f4217bf-42dc-44bd-9276-dd1297b54460",
+  "action": "USER_LOGIN",
+  "details": "{\"ipAddress\": \"192.168.1.1\", \"device\": \"MacBook Pro\"}"
+}
+
+
+### 2. Fetch User's Logs
+GET http://localhost:8080/api/v1/users/9f4217bf-42dc-44bd-9276-dd1297b54460/logs
+Accept: application/json

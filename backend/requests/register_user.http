@@ -1,0 +1,10 @@
+### Register a new user
+POST http://192.168.1.8:8080/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "tony.stark@starkindustries.com",
+  "firstName": "Tony",
+  "middleName": "Edward",
+  "lastName": "Stark"
+}

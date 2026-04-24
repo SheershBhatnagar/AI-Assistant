@@ -1,0 +1,34 @@
+### 1. Create a New Conversation
+# Replace the userId value with your actual User ID!
+POST http://localhost:8080/api/v1/chat/conversations
+Content-Type: application/json
+
+{
+  "userId": "9f4217bf-42dc-44bd-9276-dd1297b54460",
+  "title": "My First AI Chat"
+}
+
+> {%
+    // This is a neat IntelliJ trick to save the conversation ID for the next request!
+    client.global.set("conversationId", response.body.id);
+%}
+
+
+### 2. Send a Message to the Conversation
+# This uses the conversationId automatically saved from the previous request.
+# Replace the userId value with your actual User ID!
+POST http://localhost:8080/api/v1/chat/messages
+Content-Type: application/json
+
+{
+  "userId": "9f4217bf-42dc-44bd-9276-dd1297b54460",
+  "conversationId": "{{conversationId}}",
+  "modelId": "550e8400-e29b-41d4-a716-446655440000",
+  "content": "Hello! Are you there?",
+  "senderType": "user"
+}
+
+
+### 3. Fetch the Conversation History
+GET http://localhost:8080/api/v1/chat/conversations/{{conversationId}}/messages
+Accept: application/json

@@ -1,0 +1,17 @@
+### 1. Save a new AI Configuration
+POST http://localhost:8080/api/v1/models
+Content-Type: application/json
+
+{
+  "userId": "9f4217bf-42dc-44bd-9276-dd1297b54460",
+  "name": "Gemini 1.5 Pro",
+  "apiKey": "AIzaSyDummyKeyThatShouldBeSecret123"
+}
+
+> {%
+    client.global.set("modelId", response.body.id);
+%}
+
+### 2. Fetch User's Models
+GET http://localhost:8080/api/v1/users/YOUR_USER_ID_HERE/models
+Accept: application/json
