@@ -19,8 +19,6 @@ proguard-rules.pro
 # Ktor & Backend Specific
 **/log/
 **/logs/
-application.conf
-application.yaml
 **/resources/secret.conf
 **/.env
 
