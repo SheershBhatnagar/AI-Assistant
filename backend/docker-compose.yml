@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # 1. The PostgreSQL Database Container
+  db:
+    image: postgres:15-alpine
+    container_name: ai_assistant_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ai_assistant
+    ports:
+      - "5432:5432"
+    volumes:
+      # This ensures your database data survives even if the container stops!
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai_network
+
+  # 2. Your Ktor Backend Container
+  backend:
+    build: .
+    container_name: ai_assistant_backend
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+    depends_on:
+      - db
+    networks:
+      - ai_network
+
+networks:
+  ai_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

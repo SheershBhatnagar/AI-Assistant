@@ -8,15 +8,18 @@ import org.koin.ktor.plugin.Koin
 import dev.sheershbhatnagar.ai_assistant.application.services.*
 import dev.sheershbhatnagar.ai_assistant.domain.repository.*
 import dev.sheershbhatnagar.ai_assistant.infrastructure.database.repositories.*
+import dev.sheershbhatnagar.ai_assistant.infrastructure.external.AiClient
 
 val appModule = module {
+    single { AiClient(get()) }
+    
     // AI Config Domain
     single<AiModelRepository> { AiModelRepositoryImpl() }
     single { AiModelService(get()) }
 
     // Chat Domain
     single<ChatRepository> { ChatRepositoryImpl() }
-    single { ChatService(get()) }
+    single { ChatService(get(), get(), get()) }
 
     // System Logs Domain
     single<SystemLogRepository> { SystemLogRepositoryImpl() }
@@ -30,6 +33,9 @@ val appModule = module {
 fun Application.configureDI() {
     install(Koin) {
         slf4jLogger()
-        modules(appModule)
+        modules(
+            appModule,
+            httpClientModule
+        )
     }
 }

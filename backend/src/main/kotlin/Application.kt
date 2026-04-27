@@ -1,9 +1,9 @@
 package dev.sheershbhatnagar.ai_assistant
 
 import io.ktor.server.netty.*
+import io.ktor.server.application.Application
 
 import dev.sheershbhatnagar.ai_assistant.plugins.*
-import io.ktor.server.application.Application
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 
@@ -11,6 +11,8 @@ fun main(args: Array<String>): Unit = EngineMain.main(args)
 fun Application.module() {
     configureDI()
     configureSerialization()
+    configureSecurity()
+    configureStatusPages()
     configureDatabases()
     configureRouting()
 }

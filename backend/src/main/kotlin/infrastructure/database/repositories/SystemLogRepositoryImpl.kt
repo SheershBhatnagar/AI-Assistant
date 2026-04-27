@@ -1,10 +1,10 @@
-package dev.sheershbhatnagar.ai_assistant.infrastructure.database.repositories
-
 /*
  * ॐ नमः शिवाय
  * By: Sheersh Bhatnagar
  * Date: 24/04/26 17:55
  */
+
+package dev.sheershbhatnagar.ai_assistant.infrastructure.database.repositories
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction

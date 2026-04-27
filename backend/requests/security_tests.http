@@ -1,0 +1,33 @@
+### 1. Register and get the JWT Token
+POST http://localhost:8080/api/v1/users/register
+Content-Type: application/json
+
+{
+  "email": "secure.user@enterprise.com",
+  "firstName": "Secure",
+  "lastName": "User"
+}
+
+> {%
+    // This script captures the token from the JSON response and saves it as a variable!
+    client.global.set("auth_token", response.body.token);
+%}
+
+
+### 2. Create a Conversation (WITH Token)
+POST http://localhost:8080/api/v1/chat/conversations
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "title": "My Top Secret Verified Chat"
+}
+
+
+### 3. Create a Conversation (WITHOUT Token - Should Fail)
+POST http://localhost:8080/api/v1/chat/conversations
+Content-Type: application/json
+
+{
+  "title": "This should be blocked"
+}

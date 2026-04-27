@@ -1,0 +1,40 @@
+### 1. Save Your AI Configuration (e.g., Gemini)
+POST http://localhost:8080/api/v1/models
+Content-Type: application/json
+
+{
+  "userId": "9f4217bf-42dc-44bd-9276-dd1297b54460",
+  "name": "gemini-1.5-flash",
+  "apiKey": "AIzaSyARX3igaMInGXeFdhCXhfeDnSPRQf18ghI"
+}
+
+> {%
+    // Save the Model ID for the chat request
+    client.global.set("modelId", response.body.id);
+%}
+
+### 2. Create a New Conversation
+POST http://localhost:8080/api/v1/chat/conversations
+Content-Type: application/json
+
+{
+  "userId": "9f4217bf-42dc-44bd-9276-dd1297b54460",
+  "title": "My End-to-End AI Test"
+}
+
+> {%
+    // Save the Conversation ID for the message request
+    client.global.set("conversationId", response.body.id);
+%}
+
+### 3. Send a Message to the AI!
+POST http://localhost:8080/api/v1/chat/messages
+Content-Type: application/json
+
+{
+  "userId": "9f4217bf-42dc-44bd-9276-dd1297b54460",
+  "conversationId": "{{conversationId}}",
+  "modelId": "{{modelId}}",
+  "content": "In one short sentence, what is the best thing about the Kotlin programming language?",
+  "senderType": "user"
+}

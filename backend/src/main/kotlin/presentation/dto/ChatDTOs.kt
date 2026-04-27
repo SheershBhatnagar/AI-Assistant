@@ -1,10 +1,10 @@
-package dev.sheershbhatnagar.ai_assistant.presentation.dto
-
 /*
  * ॐ नमः शिवाय
  * By: Sheersh Bhatnagar
  * Date: 24/04/26 16:28
  */
+
+package dev.sheershbhatnagar.ai_assistant.presentation.dto
 
 import kotlinx.serialization.Serializable
 
@@ -13,13 +13,11 @@ import dev.sheershbhatnagar.ai_assistant.domain.models.SenderType
 // --- Requests (Incoming JSON) ---
 @Serializable
 data class CreateConversationRequest(
-    val userId: String,
     val title: String
 )
 
 @Serializable
 data class SendMessageRequest(
-    val userId: String,
     val conversationId: String,
     val modelId: String,
     val content: String,

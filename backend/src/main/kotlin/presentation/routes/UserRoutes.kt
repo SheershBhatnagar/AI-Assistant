@@ -17,7 +17,7 @@ fun Route.userRoutes(userService: UserService) {
     route("/api/v1/users") {
 
         post("/register") {
-            try {
+
                 val request = call.receive<RegisterUserRequest>()
 
                 val newUser = User(
@@ -37,19 +37,12 @@ fun Route.userRoutes(userService: UserService) {
                         id = createdUser.id.toString(),
                         email = createdUser.email,
                         firstName = createdUser.firstName,
-                        lastName = createdUser.lastName
+                        lastName = createdUser.lastName,
+                        token = userService.generateJwtToken(createdUser.id)
                     )
 
                     call.respond(HttpStatusCode.Created, response)
-                } else {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to create user")
                 }
-
-            } catch (e: IllegalArgumentException) {
-                call.respond(HttpStatusCode.Conflict, e.message ?: "Conflict")
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid request format")
-            }
         }
     }
 }

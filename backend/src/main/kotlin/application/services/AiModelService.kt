@@ -1,10 +1,10 @@
-package dev.sheershbhatnagar.ai_assistant.application.services
-
 /*
  * ॐ नमः शिवाय
  * By: Sheersh Bhatnagar
  * Date: 24/04/26 17:10
- */
+*/
+
+package dev.sheershbhatnagar.ai_assistant.application.services
 
 import java.util.UUID
 
