@@ -63,7 +63,7 @@ fun Route.chatRoutes(chatService: ChatService) {
                         id = UUID.randomUUID(),
                         userId = UUID.fromString(secureUserId),
                         conversationId = UUID.fromString(request.conversationId),
-                        modelId = UUID.fromString(request.modelId),
+                        modelId = request.modelId?.let { UUID.fromString(it) },
                         content = request.content,
                         senderType = request.senderType,
                         createdAt = LocalDateTime.now(),
@@ -80,6 +80,28 @@ fun Route.chatRoutes(chatService: ChatService) {
                             createdAt = created.createdAt.toString()
                         ))
                     }
+            }
+
+            get("/conversations") {
+                val principal = call.principal<JWTPrincipal>()
+                val secureUserId = principal?.payload?.getClaim("userId")?.asString()
+
+                if (secureUserId == null) {
+                    call.respond(HttpStatusCode.Unauthorized, "Missing or invalid token claim")
+                    return@get
+                }
+
+                val userId = UUID.fromString(secureUserId)
+                val conversations = chatService.getUserConversations(userId)
+
+                val response = conversations.map {
+                    ConversationResponse(
+                        id = it.id.toString(),
+                        title = it.title,
+                        createdAt = it.createdAt.toString()
+                    )
+                }
+                call.respond(HttpStatusCode.OK, response)
             }
 
             get("/conversations/{id}/messages") {

@@ -2,6 +2,7 @@ package dev.sheershbhatnagar.ai_assistant.infrastructure.database.repositories
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import java.util.UUID
 
 import dev.sheershbhatnagar.ai_assistant.domain.models.User
 import dev.sheershbhatnagar.ai_assistant.domain.repository.UserRepository
@@ -38,6 +39,14 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun getUserByEmail(email: String): User? {
         return newSuspendedTransaction {
             UsersTable.select { UsersTable.email eq email }
+                .map(::resultRowToUser)
+                .singleOrNull()
+        }
+    }
+
+    override suspend fun getUserById(id: UUID): User? {
+        return newSuspendedTransaction {
+            UsersTable.select { UsersTable.id eq id }
                 .map(::resultRowToUser)
                 .singleOrNull()
         }

@@ -9,15 +9,19 @@ import dev.sheershbhatnagar.ai_assistant.presentation.routes.*
 
 fun Application.configureRouting() {
 
+    val authService by inject<AuthService>()
     val aiModelService by inject<AiModelService>()
     val chatService by inject<ChatService>()
     val systemLogService by inject<SystemLogService>()
     val userService by inject<UserService>()
+    val userSettingsService by inject<UserSettingsService>()
 
     routing {
+        authRoutes(authService)
         aiModelRoutes(aiModelService)
         chatRoutes(chatService)
         systemLogRoutes(systemLogService)
         userRoutes(userService)
+        userSettingsRoutes(userSettingsService)
     }
 }

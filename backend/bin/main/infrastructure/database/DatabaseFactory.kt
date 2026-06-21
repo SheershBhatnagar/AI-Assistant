@@ -3,33 +3,34 @@ package dev.sheershbhatnagar.ai_assistant.infrastructure.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
-
-import dev.sheershbhatnagar.ai_assistant.infrastructure.database.entities.*
+import org.flywaydb.core.Flyway
 
 object DatabaseFactory {
 
     fun init() {
         val pool = hikari()
 
-        Database.connect(pool)
+        val flyway = Flyway.configure()
+            .dataSource(pool)
+            .baselineOnMigrate(true)
+            .load()
+        flyway.migrate()
 
-        transaction {
-            SchemaUtils.create(ConversationsTable)
-            SchemaUtils.create(MessagesTable)
-            SchemaUtils.create(ModelsTable)
-            SchemaUtils.create(LogsTable)
-            SchemaUtils.create(UsersTable)
-        }
+        Database.connect(pool)
     }
 
     private fun hikari(): HikariDataSource {
         val config = HikariConfig().apply {
+            val dbHost = System.getenv("DB_HOST") ?: "192.168.1.12"
+            val dbPort = System.getenv("DB_PORT") ?: "5432"
+            val dbName = System.getenv("DB_NAME") ?: "ai_assistant"
+            val dbUser = System.getenv("DB_USER") ?: "postgres"
+            val dbPassword = System.getenv("DB_PASSWORD") ?: "postgres"
+
             driverClassName = "org.postgresql.Driver"
-            jdbcUrl = "jdbc:postgresql://192.168.1.10:5432/ai_assistant"
-            username = "postgres"
-            password = "postgres"
+            jdbcUrl = "jdbc:postgresql://$dbHost:$dbPort/$dbName"
+            username = dbUser
+            password = dbPassword
 
             maximumPoolSize = 10
             isAutoCommit = false

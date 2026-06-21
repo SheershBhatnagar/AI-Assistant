@@ -30,4 +30,8 @@ class UserService(private val userRepository: UserRepository) {
             .withExpiresAt(Date(System.currentTimeMillis() + 86400000))
             .sign(Algorithm.HMAC256(jwtSecret))
     }
+
+    suspend fun getUserById(userId: UUID): User? {
+        return userRepository.getUserById(userId)
+    }
 }

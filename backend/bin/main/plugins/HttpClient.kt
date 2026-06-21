@@ -1,10 +1,10 @@
-package dev.sheershbhatnagar.ai_assistant.plugins
-
 /*
  * ॐ नमः शिवाय
  * By: Sheersh Bhatnagar
  * Date: 24/04/26 18:18
  */
+
+package dev.sheershbhatnagar.ai_assistant.plugins
 
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -24,6 +24,7 @@ val httpClientModule = module {
                 })
             }
             install(Logging) {
+                // This will now correctly use Ktor's LogLevel
                 level = LogLevel.INFO
             }
         }

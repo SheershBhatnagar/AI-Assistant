@@ -21,7 +21,7 @@ object DatabaseFactory {
 
     private fun hikari(): HikariDataSource {
         val config = HikariConfig().apply {
-            val dbHost = System.getenv("DB_HOST") ?: "localhost"
+            val dbHost = System.getenv("DB_HOST") ?: "192.168.1.12"
             val dbPort = System.getenv("DB_PORT") ?: "5432"
             val dbName = System.getenv("DB_NAME") ?: "ai_assistant"
             val dbUser = System.getenv("DB_USER") ?: "postgres"

@@ -19,7 +19,7 @@ data class CreateConversationRequest(
 @Serializable
 data class SendMessageRequest(
     val conversationId: String,
-    val modelId: String,
+    val modelId: String? = null,
     val content: String,
     val senderType: SenderType
 )

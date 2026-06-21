@@ -43,6 +43,9 @@ dependencies {
     implementation("org.flywaydb:flyway-core:9.22.3")
     implementation("com.zaxxer:HikariCP:5.0.1")
 
+    // Modern JavaMail API
+    implementation("org.eclipse.angus:jakarta.mail:2.0.3")
+
     // Dependency Injection (Koin)
     implementation("io.insert-koin:koin-ktor:3.5.0")
     implementation("io.insert-koin:koin-logger-slf4j:3.5.0")

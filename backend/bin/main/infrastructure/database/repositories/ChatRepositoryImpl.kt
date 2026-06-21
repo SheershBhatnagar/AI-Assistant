@@ -67,7 +67,7 @@ class ChatRepositoryImpl : ChatRepository {
                 it[id] = message.id
                 it[userId] = message.userId
                 it[conversationId] = message.conversationId
-                it[modelId] = message.modelId
+                it[modelId] = message.modelId ?: throw IllegalArgumentException("modelId is required")
                 it[content] = message.content
                 it[senderType] = message.senderType
                 it[createdAt] = message.createdAt

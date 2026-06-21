@@ -13,12 +13,14 @@ import dev.sheershbhatnagar.ai_assistant.domain.models.Conversation
 import dev.sheershbhatnagar.ai_assistant.domain.models.Message
 import dev.sheershbhatnagar.ai_assistant.domain.models.SenderType
 import dev.sheershbhatnagar.ai_assistant.domain.repository.ChatRepository
+import dev.sheershbhatnagar.ai_assistant.domain.repository.UserSettingsRepository
 import dev.sheershbhatnagar.ai_assistant.infrastructure.external.AiClient
 
 class ChatService(
     private val chatRepository: ChatRepository,
     private val aiModelService: AiModelService,
-    private val aiClient: AiClient
+    private val aiClient: AiClient,
+    private val userSettingsRepository: UserSettingsRepository
 ) {
     suspend fun startConversation(conversation: Conversation): Conversation? {
         return chatRepository.createConversation(conversation)
@@ -41,14 +43,23 @@ class ChatService(
     }
 
     suspend fun processUserMessage(message: Message): Message? {
-        // 1. Save user message to DB
-        chatRepository.createMessage(message)
+        // 1. Resolve default model if not supplied
+        val resolvedModelId = message.modelId ?: run {
+            val settings = userSettingsRepository.getSettingsByUserId(message.userId)
+                ?: throw IllegalArgumentException("No default model configured, and no model ID was provided in the message request.")
+            settings.defaultModelId
+        }
 
-        // 2. Lookup the Model Configuration
-        val config = aiModelService.getModelDetails(message.modelId)
+        val messageToSave = message.copy(modelId = resolvedModelId)
+
+        // 2. Save user message to DB
+        chatRepository.createMessage(messageToSave)
+
+        // 3. Lookup the Model Configuration
+        val config = aiModelService.getModelDetails(resolvedModelId)
             ?: throw IllegalArgumentException("Model config not found")
 
-        // 3. Call the correct AI Provider
+        // 4. Call the correct AI Provider
         val aiResponseContent = when {
             config.name.contains("gemini", ignoreCase = true) ->
                 aiClient.callGemini(config.name, config.apiKey, message.content)
@@ -57,12 +68,12 @@ class ChatService(
             else -> "Unknown model provider"
         }
 
-        // 4. Create and Save the AI's response message
+        // 5. Create and Save the AI's response message
         val aiMessage = Message(
             id = UUID.randomUUID(),
             userId = message.userId,
             conversationId = message.conversationId,
-            modelId = message.modelId,
+            modelId = resolvedModelId,
             content = aiResponseContent,
             senderType = SenderType.ai,
             createdAt = LocalDateTime.now(),

@@ -1,10 +1,10 @@
-package dev.sheershbhatnagar.ai_assistant.presentation.dto
-
 /*
  * ॐ नमः शिवाय
  * By: Sheersh Bhatnagar
  * Date: 24/04/26 17:16
  */
+
+package dev.sheershbhatnagar.ai_assistant.presentation.dto
 
 import kotlinx.serialization.Serializable
 

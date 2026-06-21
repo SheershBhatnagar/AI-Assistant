@@ -13,7 +13,7 @@ data class Message(
     val id: UUID,
     val userId: UUID,
     val conversationId: UUID,
-    val modelId: UUID,
+    val modelId: UUID?,
     val content: String,
     val senderType: SenderType,
     val createdAt: LocalDateTime,
