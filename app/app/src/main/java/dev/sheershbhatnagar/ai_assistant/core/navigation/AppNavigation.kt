@@ -31,6 +31,7 @@ fun AppNavigation(
 ) {
     val context = LocalContext.current
     val sessionManager = SessionManager(context)
+    val authViewModel: AuthViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -53,7 +54,6 @@ fun AppNavigation(
         }
 
         composable("email_screen") {
-            val authViewModel: AuthViewModel = viewModel()
             EmailScreen(
                 viewModel = authViewModel,
                 onNavigateToOtp = {
@@ -63,7 +63,6 @@ fun AppNavigation(
         }
 
         composable("otp_screen") {
-            val authViewModel: AuthViewModel = viewModel()
             OtpScreen(
                 viewModel = authViewModel,
                 onNavigateToHome = {
