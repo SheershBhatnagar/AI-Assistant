@@ -1,30 +1,47 @@
-# backend
+# AI Assistant Backend (Python FastAPI + Alembic)
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
-
-Here are some useful links to get you started:
-
-* [Ktor Documentation](https://ktor.io/docs/home.html)
-* [Ktor GitHub page](https://github.com/ktorio/ktor)
-* [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). [Request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up).
+This is the Python-based backend for the AI Assistant, migrated from Kotlin Ktor.
 
 ## Features
+- **FastAPI**: Asynchronous web framework for APIs.
+- **SQLAlchemy (ORM)**: Database models across multiple PostgreSQL schemas (`users`, `chat`, `ai_config`, `system`).
+- **Alembic**: Database migrations with multi-schema support.
+- **Pytest**: Integration and unit tests for the services and database models.
+- **SMTP Authentication**: Secure OTP-based authentication via email.
+- **AI Integrations**: Asynchronous clients for Gemini and OpenAI.
 
-Here's a list of features included in this project:
+## Local Development Setup
 
-| Name | Description |
-|------|-------------|
+1. Create a Python virtual environment:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
 
-## Building & Running
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-To build or run the project, use one of the following tasks:
+3. Run migrations:
+   ```bash
+   alembic upgrade head
+   ```
 
-| Task | Description |
-|------|-------------|
+4. Start the application:
+   ```bash
+   uvicorn app.main:app --reload --port 8080
+   ```
 
-If the server starts successfully, you'll see the following output:
-
+## Running Tests
+Run pytest from the backend root:
+```bash
+python -m pytest
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+
+## Running with Docker Compose
+From the project root:
+```bash
+docker compose up --build
 ```
+This builds the new FastAPI image and spins up the Postgres database. Alembic migrations run automatically on container startup.

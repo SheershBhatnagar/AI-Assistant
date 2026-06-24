@@ -1,16 +1,28 @@
-# --- Stage 1: Build the Application ---
-FROM gradle:8-jdk21 AS build
-COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
-# This builds a 'Fat Jar' containing your app and all dependencies
-RUN gradle buildFatJar --no-daemon
+# --- Stage 1: Build Dependencies ---
+FROM python:3.11-alpine AS builder
 
-# --- Stage 2: Run the Application ---
-FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+# Install build dependencies for C-extensions if needed
+RUN apk add --no-cache gcc musl-dev postgresql-dev libffi-dev
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# --- Stage 2: Final Image ---
+FROM python:3.11-alpine
+
+WORKDIR /app
+
+# Copy python packages
+COPY --from=builder /root/.local /root/.local
+COPY . /app
+
+# Ensure local bin is on path (for uvicorn, alembic, etc.)
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONPATH=/app
+
 EXPOSE 8080
-RUN mkdir /app
-# Copy only the compiled Fat Jar from the build stage
-COPY --from=build /home/gradle/src/build/libs/*-all.jar /app/ktor-app.jar
 
-# Start the server
-ENTRYPOINT ["java", "-jar", "/app/ktor-app.jar"]
+# Apply migrations first, then run the uvicorn server
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8080"]

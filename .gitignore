@@ -16,10 +16,12 @@ local.properties
 **/generated/
 proguard-rules.pro
 
-# Ktor & Backend Specific
+# Backend Specific
 **/log/
 **/logs/
-**/resources/secret.conf
+**/.venv/
+**/.pytest_cache/
+**/__pycache__/
 **/.env
 
 # IDE Settings (IntelliJ IDEA & Android Studio)

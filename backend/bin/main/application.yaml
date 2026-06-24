@@ -1,6 +1,0 @@
-ktor:
-  deployment:
-    port: 8080
-  application:
-    modules:
-      - dev.sheershbhatnagar.ai_assistant.ApplicationKt.module
