@@ -1,8 +1,9 @@
+import logging
+
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import logging
 
 from app.routers import auth, user, user_settings, ai_model, chat, system_log
 
