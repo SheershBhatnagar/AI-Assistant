@@ -21,6 +21,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _userName = MutableStateFlow("")
     val userName: StateFlow<String> = _userName.asStateFlow()
 
+    private val _userLastName = MutableStateFlow("")
+    val userLastName: StateFlow<String> = _userLastName.asStateFlow()
+
     private val _models = MutableStateFlow<List<AiModelResponse>>(emptyList())
     val models: StateFlow<List<AiModelResponse>> = _models.asStateFlow()
 
@@ -30,12 +33,20 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _profileState = MutableStateFlow<ProfileState>(ProfileState.Idle)
     val profileState: StateFlow<ProfileState> = _profileState.asStateFlow()
 
+    val isDarkTheme = MutableStateFlow(true)
+
     init {
         viewModelScope.launch {
             sessionManager.userEmail.collect { email -> _userEmail.value = email ?: "" }
         }
         viewModelScope.launch {
             sessionManager.userFirstName.collect { name -> _userName.value = name ?: "" }
+        }
+        viewModelScope.launch {
+            sessionManager.userLastName.collect { lastName -> _userLastName.value = lastName ?: "" }
+        }
+        viewModelScope.launch {
+            sessionManager.isDarkTheme.collect { isDark -> isDarkTheme.value = isDark }
         }
         viewModelScope.launch {
             sessionManager.defaultModelId.collect { id -> _defaultModelId.value = id }
@@ -46,6 +57,20 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     fun loadData() {
         _profileState.value = ProfileState.Loading
         viewModelScope.launch {
+            // 1. Fetch latest profile info from API
+            val profileResult: Result<UserProfileResponse> = networkClient.get("api/v1/users/profile")
+            profileResult.fold(
+                onSuccess = { profile ->
+                    sessionManager.saveUserProfile(
+                        firstName = profile.firstName,
+                        lastName = profile.lastName,
+                        email = profile.email
+                    )
+                },
+                onFailure = {}
+            )
+
+            // 2. Fetch models
             val modelsResult: Result<List<AiModelResponse>> = networkClient.get("api/v1/models")
             modelsResult.fold(
                 onSuccess = { modelList ->
@@ -68,6 +93,45 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 }
             )
         }
+    }
+
+    fun updateProfile(firstName: String, lastName: String?, onComplete: (Boolean) -> Unit) {
+        if (firstName.isBlank()) {
+            _profileState.value = ProfileState.Error("First name cannot be empty")
+            onComplete(false)
+            return
+        }
+
+        _profileState.value = ProfileState.Loading
+        viewModelScope.launch {
+            val request = UpdateProfileRequest(firstName = firstName, lastName = lastName)
+            val result: Result<UserProfileResponse> = networkClient.put("api/v1/users/profile", request)
+            result.fold(
+                onSuccess = { profile ->
+                    sessionManager.saveUserProfile(
+                        firstName = profile.firstName,
+                        lastName = profile.lastName,
+                        email = profile.email
+                    )
+                    _profileState.value = ProfileState.Idle
+                    onComplete(true)
+                },
+                onFailure = { error ->
+                    _profileState.value = ProfileState.Error(error.message ?: "Failed to update profile")
+                    onComplete(false)
+                }
+            )
+        }
+    }
+
+    fun toggleTheme(isDark: Boolean) {
+        viewModelScope.launch {
+            sessionManager.saveThemeSetting(isDark)
+        }
+    }
+
+    fun resetState() {
+        _profileState.value = ProfileState.Idle
     }
 
     fun addModel(name: String, apiKey: String) {

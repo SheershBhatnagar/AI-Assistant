@@ -35,3 +35,16 @@ data class UserProfileResponse(
     val firstName: String,
     val lastName: String?
 )
+
+@Serializable
+data class UpdateProfileRequest(
+    val firstName: String,
+    val lastName: String? = null
+)
+
+@Serializable
+data class ErrorResponse(
+    val status: Int,
+    val error: String,
+    val message: String
+)

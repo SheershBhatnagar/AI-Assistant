@@ -11,9 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Onyx,
-    secondary = Onyx,
-    tertiary = Onyx
+    background = DarkMoon,
+    primary = PearlWhite,
+    secondary = Palladium,
+    tertiary = Aria,
+    surface = Onyx,
+    onPrimary = DarkMoon,
+    onSecondary = DarkMoon,
+    onBackground = PearlWhite,
+    onSurface = PearlWhite,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -28,9 +34,8 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun AIAssistantTheme(
-//    darkTheme: Boolean = isSystemInDarkTheme(),
-    darkTheme: Boolean = false,
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme =

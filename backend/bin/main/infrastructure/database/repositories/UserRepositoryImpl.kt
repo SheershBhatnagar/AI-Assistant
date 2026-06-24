@@ -51,4 +51,18 @@ class UserRepositoryImpl : UserRepository {
                 .singleOrNull()
         }
     }
+
+    override suspend fun updateUser(user: User): User? {
+        return newSuspendedTransaction {
+            UsersTable.update({ UsersTable.id eq user.id }) {
+                it[firstName] = user.firstName
+                it[lastName] = user.lastName
+                it[middleName] = user.middleName
+                it[updatedAt] = java.time.LocalDateTime.now()
+            }
+            UsersTable.select { UsersTable.id eq user.id }
+                .map(::resultRowToUser)
+                .singleOrNull()
+        }
+    }
 }

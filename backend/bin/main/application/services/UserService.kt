@@ -34,4 +34,14 @@ class UserService(private val userRepository: UserRepository) {
     suspend fun getUserById(userId: UUID): User? {
         return userRepository.getUserById(userId)
     }
+
+    suspend fun updateUser(userId: UUID, firstName: String, lastName: String?): User? {
+        val existingUser = userRepository.getUserById(userId) ?: return null
+        val updatedUser = existingUser.copy(
+            firstName = firstName,
+            lastName = lastName,
+            updatedAt = java.time.LocalDateTime.now()
+        )
+        return userRepository.updateUser(updatedUser)
+    }
 }

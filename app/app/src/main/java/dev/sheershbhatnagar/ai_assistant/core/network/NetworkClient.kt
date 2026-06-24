@@ -9,6 +9,8 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.json.Json
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.HttpResponse
 
 class NetworkClient(val sessionManager: SessionManager) {
 
@@ -28,6 +30,21 @@ class NetworkClient(val sessionManager: SessionManager) {
         return if (host.endsWith("/")) host else "$host/"
     }
 
+    suspend inline fun <reified R> handleResponse(response: HttpResponse): R {
+        if (response.status.isSuccess()) {
+            return response.body()
+        } else {
+            val errorText = response.bodyAsText()
+            val message = try {
+                val errorObj = Json.decodeFromString<ErrorResponse>(errorText)
+                errorObj.message
+            } catch (e: Exception) {
+                "HTTP ${response.status.value}: ${response.status.description}"
+            }
+            throw Exception(message)
+        }
+    }
+
     suspend inline fun <reified R> get(path: String): Result<R> = runCatching {
         val baseUrl = getBaseUrl()
         val token = sessionManager.jwtToken.firstOrNull()
@@ -37,7 +54,7 @@ class NetworkClient(val sessionManager: SessionManager) {
             }
             contentType(ContentType.Application.Json)
         }
-        response.body<R>()
+        handleResponse(response)
     }
 
     suspend inline fun <reified T, reified R> post(path: String, body: T): Result<R> = runCatching {
@@ -50,7 +67,7 @@ class NetworkClient(val sessionManager: SessionManager) {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
-        response.body<R>()
+        handleResponse(response)
     }
 
     suspend inline fun <reified T, reified R> put(path: String, body: T): Result<R> = runCatching {
@@ -63,6 +80,6 @@ class NetworkClient(val sessionManager: SessionManager) {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
-        response.body<R>()
+        handleResponse(response)
     }
 }

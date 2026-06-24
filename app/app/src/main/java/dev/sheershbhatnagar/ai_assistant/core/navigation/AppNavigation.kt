@@ -2,6 +2,7 @@ package dev.sheershbhatnagar.ai_assistant.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,6 +23,7 @@ import dev.sheershbhatnagar.ai_assistant.features.home.HomeScreen
 import dev.sheershbhatnagar.ai_assistant.features.home.HomeViewModel
 import dev.sheershbhatnagar.ai_assistant.features.profile.ProfileScreen
 import dev.sheershbhatnagar.ai_assistant.features.profile.ProfileViewModel
+import dev.sheershbhatnagar.ai_assistant.features.profile.EditProfileScreen
 import kotlinx.coroutines.flow.firstOrNull
 
 @Composable
@@ -97,11 +99,25 @@ fun AppNavigation(
             val profileViewModel: ProfileViewModel = viewModel()
             ProfileScreen(
                 viewModel = profileViewModel,
+                onNavigateToEditProfile = {
+                    navController.navigate("edit_profile_screen")
+                },
                 onLogout = {
                     navController.navigate("email_screen") {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable("edit_profile_screen") {
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry("profile_screen")
+            }
+            val profileViewModel: ProfileViewModel = viewModel(parentEntry)
+            EditProfileScreen(
+                viewModel = profileViewModel,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

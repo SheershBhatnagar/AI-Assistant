@@ -12,7 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
@@ -28,17 +28,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.sheershbhatnagar.ai_assistant.R
 
+import androidx.compose.material.icons.filled.Edit
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
+    onNavigateToEditProfile: () -> Unit,
     onLogout: () -> Unit
 ) {
     val userName by viewModel.userName.collectAsState()
+    val userLastName by viewModel.userLastName.collectAsState()
     val userEmail by viewModel.userEmail.collectAsState()
     val models by viewModel.models.collectAsState()
     val defaultModelId by viewModel.defaultModelId.collectAsState()
     val profileState by viewModel.profileState.collectAsState()
+    val isDarkTheme by viewModel.isDarkTheme.collectAsState()
 
     var showAddDialog by remember { mutableStateOf(false) }
     var modelName by remember { mutableStateOf("") }
@@ -62,7 +67,7 @@ fun ProfileScreen(
                 actions = {
                     IconButton(onClick = { viewModel.logout(onLogout) }) {
                         Icon(
-                            Icons.Default.ExitToApp,
+                            Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "Logout",
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -97,31 +102,89 @@ fun ProfileScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(20.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.ic_avatar_17),
+                                    contentDescription = "Avatar",
+                                    modifier = Modifier
+                                        .size(72.dp)
+                                        .clip(CircleShape)
+                                )
+                                Spacer(Modifier.width(20.dp))
+                                Column {
+                                    Text(
+                                        text = if (userLastName.isNotBlank()) "$userName $userLastName" else userName,
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        text = userEmail,
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                            }
+                            IconButton(onClick = onNavigateToEditProfile) {
+                                Icon(
+                                    Icons.Default.Edit,
+                                    contentDescription = "Edit Profile",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Text(
+                        text = "PREFERENCES",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                    )
+                    Spacer(Modifier.height(10.dp))
+
+                    Surface(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp),
+                        tonalElevation = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Image(
-                                painter = painterResource(R.drawable.ic_avatar_17),
-                                contentDescription = "Avatar",
-                                modifier = Modifier
-                                    .size(72.dp)
-                                    .clip(CircleShape)
-                            )
-                            Spacer(Modifier.width(20.dp))
                             Column {
                                 Text(
-                                    text = userName,
-                                    fontSize = 20.sp,
+                                    text = "Dark Theme",
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
-                                Spacer(Modifier.height(4.dp))
                                 Text(
-                                    text = userEmail,
-                                    fontSize = 14.sp,
+                                    text = "Toggle light and dark theme",
+                                    fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.secondary
                                 )
                             }
+                            Switch(
+                                checked = isDarkTheme,
+                                onCheckedChange = { isDark ->
+                                    viewModel.toggleTheme(isDark)
+                                }
+                            )
                         }
                     }
                 }

@@ -11,6 +11,12 @@ data class RegisterUserRequest(
 )
 
 @Serializable
+data class UpdateProfileRequest(
+    val firstName: String,
+    val lastName: String? = null
+)
+
+@Serializable
 data class UserResponse(
     val id: String,
     val email: String,

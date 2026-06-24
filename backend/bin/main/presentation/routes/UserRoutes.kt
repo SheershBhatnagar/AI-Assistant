@@ -15,6 +15,7 @@ import dev.sheershbhatnagar.ai_assistant.domain.models.User
 import dev.sheershbhatnagar.ai_assistant.presentation.dto.RegisterUserRequest
 import dev.sheershbhatnagar.ai_assistant.presentation.dto.UserResponse
 import dev.sheershbhatnagar.ai_assistant.presentation.dto.UserProfileResponse
+import dev.sheershbhatnagar.ai_assistant.presentation.dto.UpdateProfileRequest
 
 fun Route.userRoutes(userService: UserService) {
 
@@ -75,6 +76,41 @@ fun Route.userRoutes(userService: UserService) {
                     }
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.BadRequest, "Invalid User ID format")
+                }
+            }
+
+            put("/profile") {
+                val principal = call.principal<JWTPrincipal>()
+                val secureUserId = principal?.payload?.getClaim("userId")?.asString()
+
+                if (secureUserId == null) {
+                    call.respond(HttpStatusCode.Unauthorized, "Missing or invalid token claim")
+                    return@put
+                }
+
+                try {
+                    val userId = UUID.fromString(secureUserId)
+                    val request = call.receive<UpdateProfileRequest>()
+                    
+                    if (request.firstName.isBlank()) {
+                        call.respond(HttpStatusCode.BadRequest, "First name cannot be empty")
+                        return@put
+                    }
+
+                    val updated = userService.updateUser(userId, request.firstName, request.lastName)
+
+                    if (updated != null) {
+                        call.respond(HttpStatusCode.OK, UserProfileResponse(
+                            id = updated.id.toString(),
+                            email = updated.email,
+                            firstName = updated.firstName,
+                            lastName = updated.lastName
+                        ))
+                    } else {
+                        call.respond(HttpStatusCode.NotFound, "User not found")
+                    }
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.BadRequest, "Invalid request or user ID")
                 }
             }
         }
